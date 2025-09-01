@@ -2,10 +2,19 @@
   "name": "redux-at-home",
   "module": "index.ts",
   "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest"
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "prettier": "prettier . --check",
+    "prettier:fix": "prettier . --write",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix --fix-suggestions --fix-dangerously"
   },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+  "devDependencies": {
+    "@types/bun": "latest",
+    "lefthook": "1.12.3",
+    "lint-staged": "16.1.6",
+    "oxlint": "1.14.0",
+    "prettier": "3.6.2",
+    "typescript": "5.9.2"
   }
 }
