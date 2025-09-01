@@ -1,0 +1,70 @@
+---
+description: Правила именования переменных
+globs: *.ts
+alwaysApply: false
+---
+# Правила именования переменных
+
+## Основные принципы
+- Используйте **camelCase** для всех переменных
+- Имена должны быть **описательными** и отражать назначение
+- **НЕ сокращайте** названия переменных - делайте их читаемыми
+
+## Типы переменных
+
+### Обычные переменные
+- Используйте существительные или существительные с прилагательными
+- Примеры: `state`, `listeners`, `reducer`, `action`, `middleware`
+- Хорошо: `previousStateForKey`, `nextStateForKey`, `hasChanged`
+- Плохо: `prev`, `next`, `changed`
+
+### Счетчики и индексы
+- Используйте описательные названия для счетчиков
+- Примеры: `listenerIdCounter`, `listenerId`
+- Хорошо: `listenerIdCounter`, `listenerId`
+- Плохо: `i`, `counter`, `id`
+
+### Булевы переменные
+- Начинайте с глаголов "is", "has", "can", "should"
+- Примеры: `hasChanged`, `isInitialized`
+- Хорошо: `hasChanged`
+- Плохо: `changed`, `flag`
+
+### Объекты и коллекции
+- Используйте множественное число для массивов/коллекций
+- Примеры: `listeners`, `middlewares`, `reducersMapObject`
+- Хорошо: `reducersMapObject`, `listeners`
+- Плохо: `listener`, `middleware`
+
+## Константы
+- Используйте **UPPER_SNAKE_CASE** только для глобальных констант, которые не изменяются
+- **НЕ используйте** UPPER_SNAKE_CASE для переменных, даже если они `const` и расположены глобально, но несут неконстантное значение
+- Примеры: 
+  - UPPER_SNAKE_CASE: `INCREMENT`, `ADD`, `ERROR` (глобальные action types)
+  - camelCase: `InternalActionType`, `listeners`, `state` (даже если const)
+
+## Примеры из кода
+
+### Хорошие примеры
+```typescript
+const listeners: Map<number, Listener> = new Map();
+let listenerIdCounter = 0;
+const hasChanged = false;
+const nextState = {} as CombinedReducerState<ReducersMapObject>;
+const previousStateForKey = state[key];
+const nextStateForKey = reducer(previousStateForKey, action);
+```
+
+### Плохие примеры (чего избегать)
+```typescript
+const l: Map<number, Listener> = new Map(); // слишком коротко
+let counter = 0; // не описательно
+const changed = false; // не ясно, что изменилось
+const next = {}; // не ясно, что это за объект
+const prev = state[key]; // не ясно, что это за состояние
+```
+
+## Исключения
+- **Типы, интерфейсы и классы** могут использовать PascalCase
+- **Generic параметры** могут использовать короткие названия (S, A, D, Ext)
+- **Временные переменные в циклах** могут использовать короткие названия (key, reducer)

@@ -1,0 +1,79 @@
+---
+description: Правила именования функций
+globs: *.ts
+alwaysApply: false
+---
+# Правила именования функций
+
+## Основные принципы
+- Используйте **camelCase** для всех функций
+- Имена должны начинаться с **глагола действия**
+- Функции должны **описывать что они делают**
+
+## Типы функций
+
+### Основные функции
+- Начинайте с глаголов: `create`, `get`, `set`, `add`, `remove`, `update` и т.д.
+- Примеры: `createStore`, `getState`, `setState`, `addListener`
+- Хорошо: `createStore`, `getState`, `subscribe`
+- Плохо: `store`, `state`, `sub`
+
+### Функции-обработчики
+- Используйте глаголы действия: `handle`, `process`, `validate`, `transform` и т.п.
+- Примеры: `handleAction`, `processMiddleware`, `validateInput`
+- Хорошо: `handleAction`, `processMiddleware`
+- Плохо: `action`, `middleware`
+
+### Функции-предикаты
+- Начинайте с `is`, `has`, `can`, `should` и т.п.
+- Примеры: `isValid`, `hasPermission`, `canExecute`
+- Хорошо: `hasChanged`, `isInitialized`
+- Плохо: `valid`, `permission`, `execute`
+
+## Примеры из кода
+
+### Хорошие примеры
+```typescript
+export default function createStore<S, A extends Action>(reducer: Reducer<S, A>) { ... }
+export default function combineReducers<ReducersMapObject>(reducersMapObject: ReducersMapObject) { ... }
+export default function applyMiddleware(...middlewares: Middleware[]): Enhancer { ... }
+export default function randomString(): string { ... }
+
+const dispatch = (action: A): A => { ... }
+const getState = (): S => { ... }
+const subscribe = (listener: Listener): Unsubscribe => { ... }
+```
+
+### Плохие примеры (чего избегать)
+```typescript
+export default function store<S, A extends Action>(reducer: Reducer<S, A>) { ... } // не глагол
+export default function reducers<ReducersMapObject>(reducersMapObject: ReducersMapObject) { ... } // не глагол
+export default function middleware(...middlewares: Middleware[]): Enhancer { ... } // не глагол
+
+const action = (action: A): A => { ... } // не глагол
+const state = (): S => { ... } // не глагол
+const listener = (listener: Listener): Unsubscribe => { ... } // не глагол
+```
+
+## Специальные случаи
+
+### Функции-конструкторы
+- Используйте `create` для создания чего-либо
+- Примеры: `createStore`, `createReducer`
+
+### Функции-геттеры
+- Используйте `get` для получения значений
+- Примеры: `getState`, `getCurrentUser`
+
+### Функции-сеттеры
+- Используйте `set` для установки значений
+- Примеры: `setState`, `setUser`
+
+### Функции-обработчики событий
+- Используйте `handle` для обработки событий
+- Примеры: `handleClick`, `handleSubmit`
+
+## Исключения
+- **Типы и интерфейсы** могут использовать PascalCase
+- **Generic функции** могут использовать короткие названия для параметров
+- **Коллбэки** могут именоваться существительным (например, `handler` или `successCallback`)
