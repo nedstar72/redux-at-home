@@ -4,10 +4,10 @@ import compose from './compose';
 
 /**
  * Функция applyMiddleware позволяет расширять возможности dispatch с помощью цепочки middleware.
- * Она возвращает enhancer, который оборачивает store и позволяет middleware перехватывать и изменять действия.
+ * Возвращает enhancer, который позволяет middleware перехватывать и изменять actions.
  *
  * @param middlewares - список middleware, которые будут применяться к dispatch
- * @returns enhancer, который добавляет middleware в процесс обработки действий
+ * @returns enhancer, который добавляет middleware в процесс обработки actions
  */
 
 export default function applyMiddleware(): Enhancer<{}, {}>;

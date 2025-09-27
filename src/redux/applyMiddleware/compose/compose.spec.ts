@@ -4,6 +4,7 @@ import compose from '.';
 const double = (x: number): number => x * 2;
 const increment = (x: number): number => x + 1;
 const toString = (x: number): string => `#${x}`;
+const sum = (a: number, b: number, c: number): number => a + b + c;
 
 describe('compose', () => {
   it('должен возвращать тождественную функцию, когда не предоставлено функций', () => {
@@ -34,7 +35,6 @@ describe('compose', () => {
   });
 
   it('должен поддерживать различное количество аргументов для самой внутренней функции', () => {
-    const sum = (a: number, b: number, c: number): number => a + b + c;
     const fn = compose(double, sum);
     expect(fn(1, 2, 3)).toBe(12);
   });

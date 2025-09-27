@@ -1,11 +1,50 @@
 /**
- * Интерфейс Identity описывает функцию-идентичность, которая возвращает переданные ей аргументы без изменений.
- * Может принимать как один аргумент, так и массив аргументов.
+ * Интерфейс IdentityFunction описывает функцию-идентичность, которая возвращает
+ * переданные ей аргументы без изменений. Может принимать как один аргумент, так
+ * и массив аргументов.
  */
-interface Identity {
+interface IdentityFunction {
   <A>(arg: A): A;
   <T extends unknown[]>(...args: T): T;
 }
+
+/**
+ * Определяет первую функцию в кортеже функций.
+ * Нужен для получения возвращаемого значения итоговой композиции.
+ */
+type FirstFunction<Funcs extends AnyFunction[]> = Funcs extends [
+  infer First extends AnyFunction,
+  ...unknown[],
+]
+  ? First
+  : never;
+
+/**
+ * Определяет последнюю функцию в кортеже функций.
+ * Нужен для сохранения исходной сигнатуры аргументов.
+ */
+type LastFunction<Funcs extends AnyFunction[]> = Funcs extends [
+  ...unknown[],
+  infer Last extends AnyFunction,
+]
+  ? Last
+  : never;
+
+/**
+ * Проверяет, что каждая функция принимает результат следующей.
+ * Возвращает кортеж функций, если сигнатуры совместимы, иначе never.
+ */
+type EnsureComposable<Funcs extends AnyFunction[]> = Funcs extends [
+  infer First extends AnyFunction,
+  infer Second extends AnyFunction,
+  ...infer Rest extends AnyFunction[],
+]
+  ? Parameters<First> extends [infer Argument]
+    ? ReturnType<Second> extends Argument
+      ? [First, ...EnsureComposable<[Second, ...Rest]>]
+      : never
+    : never
+  : Funcs;
 
 /**
  * Функция compose выполняет композицию функций справа налево.
@@ -16,36 +55,15 @@ interface Identity {
  * Пример: compose(f, g, h) создает функцию x => f(g(h(x)))
  */
 
-export default function compose(): Identity;
+export default function compose(): IdentityFunction;
 
-export default function compose<F extends Function>(f: F): F;
+export default function compose<Func extends AnyFunction>(func: Func): Func;
 
-export default function compose<Args extends unknown[], ReturnValue>(
-  f: Func<Args, ReturnValue>,
-): Func<Args, ReturnValue>;
-
-export default function compose<A, Args extends unknown[], ReturnValue>(
-  f1: (a: A) => ReturnValue,
-  f2: Func<Args, A>,
-): Func<Args, ReturnValue>;
-
-export default function compose<A, B, Args extends unknown[], ReturnValue>(
-  f1: (b: B) => ReturnValue,
-  f2: (a: A) => B,
-  f3: Func<Args, A>,
-): Func<Args, ReturnValue>;
-
-export default function compose<A, B, C, Args extends unknown[], ReturnValue>(
-  f1: (c: C) => ReturnValue,
-  f2: (b: B) => C,
-  f3: (a: A) => B,
-  f4: Func<Args, A>,
-): Func<Args, ReturnValue>;
-
-export default function compose<ReturnValue>(
-  f1: (...args: any[]) => ReturnValue,
-  ...funcs: Function[]
-): (...args: unknown[]) => ReturnValue;
+export default function compose<Funcs extends AnyFunction[]>(
+  ...funcs: Funcs
+): (
+  ...args: Parameters<LastFunction<EnsureComposable<Funcs>>>
+) => ReturnType<FirstFunction<EnsureComposable<Funcs>>>;
 
 export default function compose<ReturnValue>(
   ...funcs: Function[]
