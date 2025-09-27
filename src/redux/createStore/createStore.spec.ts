@@ -1,4 +1,3 @@
-import { describe, it, expect, mock } from 'bun:test';
 import type { Action } from './types/Action';
 import type { Reducer } from './types/Reducer';
 import type { Store } from './types/Store';
@@ -50,7 +49,7 @@ describe('createStore', () => {
 
     const store: Store<number, AddAction> = createStore(reducer);
 
-    const listener = mock(() => {});
+    const listener = jest.fn();
 
     const unsubscribe = store.subscribe(listener);
 
@@ -74,8 +73,8 @@ describe('createStore', () => {
 
     const store: Store<number, AddAction> = createStore(reducer);
 
-    const listenerA = mock(() => {});
-    const listenerB = mock(() => {});
+    const listenerA = jest.fn();
+    const listenerB = jest.fn();
 
     const unsubscribeA = store.subscribe(listenerA);
     store.subscribe(listenerB);
@@ -106,7 +105,7 @@ describe('createStore', () => {
       };
     };
 
-    const reducer: Reducer<{ initial: true }> = (state = { initial: true }, _) => state;
+    const reducer: Reducer<{ initial: true }> = (state = { initial: true }) => state;
     const store = createStore(reducer, enhancer);
 
     expect(store.enhanced).toBe(true);
@@ -123,11 +122,11 @@ describe('createStore', () => {
     };
     const store: Store<number, ErrorAction> = createStore(reducer);
 
-    const listener = mock(() => {});
+    const listener = jest.fn();
 
     store.subscribe(listener);
 
     expect(() => store.dispatch({ type: ERROR })).not.toThrow();
-    expect(listener).not.toBeCalled();
+    expect(listener).not.toHaveBeenCalled();
   });
 });

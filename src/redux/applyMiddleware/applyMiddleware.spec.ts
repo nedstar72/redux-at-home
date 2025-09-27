@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'bun:test';
 import { createStore, type Dispatch, type Reducer } from '../createStore';
 import applyMiddleware from './applyMiddleware';
 import type { Middleware, MiddlewareAPI } from './types/Middleware';

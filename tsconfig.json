@@ -25,6 +25,7 @@
     "noPropertyAccessFromIndexSignature": false,
 
     // Types
-    "typeRoots": ["./node_modules/@types", "./global.d.ts"]
+    "typeRoots": ["./node_modules/@types", "./global.d.ts"],
+    "types": ["jest"]
   }
 }

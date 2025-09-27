@@ -1,4 +1,3 @@
-import { describe, it, expect } from 'bun:test';
 import compose from '.';
 
 const double = (x: number): number => x * 2;

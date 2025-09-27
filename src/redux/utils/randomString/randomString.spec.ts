@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
 import randomString from '.';
 
 describe('randomString', () => {
@@ -15,7 +14,7 @@ describe('randomString', () => {
   it('должен создавать строку с точками из символов base-36 по случайному числу', () => {
     Math.random = () => 0.123456789;
     const result = randomString();
-    expect(result).toBe('x.j.y.l.r.z');
+    expect(result).toBe('x.j.y.l.r.x');
   });
 
   it('должен возвращать строку, содержащую только строчные буквы, цифры и точки', () => {

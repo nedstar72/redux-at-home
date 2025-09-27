@@ -1,4 +1,3 @@
-import { describe, it, expect, mock } from 'bun:test';
 import type { UnknownAction } from '../../redux/createStore';
 import type { ThunkAction } from './types';
 import createThunkMiddleware from './createThunkMiddleware';
@@ -6,10 +5,10 @@ import createThunkMiddleware from './createThunkMiddleware';
 describe('ThunkMiddleware', () => {
   it('должен передавать в action-функцию dispatch и getState', () => {
     const api = {
-      dispatch: mock(),
-      getState: mock(),
+      dispatch: jest.fn(),
+      getState: jest.fn(),
     };
-    const next = mock();
+    const next = jest.fn();
     const thunkAction: ThunkAction<UnknownAction, string, never, void> = (dispatch, getState) => {
       expect(dispatch).toBe(api.dispatch);
       expect(getState).toBe(api.getState);
@@ -20,10 +19,10 @@ describe('ThunkMiddleware', () => {
 
   it('должен пропускать action, если это не функция', () => {
     const api = {
-      dispatch: mock(),
-      getState: mock(),
+      dispatch: jest.fn(),
+      getState: jest.fn(),
     };
-    const next = mock();
+    const next = jest.fn();
     const action: UnknownAction = { type: 'TestAction' };
 
     createThunkMiddleware()(api)(next)(action);
@@ -34,8 +33,8 @@ describe('ThunkMiddleware', () => {
 
   it('должен возвращать значение из next, если action это не функция', () => {
     const api = {
-      dispatch: mock(),
-      getState: mock(),
+      dispatch: jest.fn(),
+      getState: jest.fn(),
     };
     const next = (action: unknown) => action;
     const action: UnknownAction = { type: 'TestAction' };
@@ -47,10 +46,10 @@ describe('ThunkMiddleware', () => {
 
   it('должен возвращать значение из action-функции', () => {
     const api = {
-      dispatch: mock(),
-      getState: mock(),
+      dispatch: jest.fn(),
+      getState: jest.fn(),
     };
-    const next = mock();
+    const next = jest.fn();
     const thunkAction: ThunkAction<UnknownAction, string, never, void> = () => {
       return 'result';
     };
@@ -63,10 +62,10 @@ describe('ThunkMiddleware', () => {
     let mutated = 0;
 
     const api = {
-      dispatch: mock(),
-      getState: mock(),
+      dispatch: jest.fn(),
+      getState: jest.fn(),
     };
-    const next = mock();
+    const next = jest.fn();
     const thunkAction: ThunkAction<UnknownAction, string, never, void> = () => {
       mutated += 1;
     };
@@ -78,10 +77,10 @@ describe('ThunkMiddleware', () => {
   it('должен передавать extra аргумент в action-функцию', () => {
     const extra = { lol: true };
     const api = {
-      dispatch: mock(),
-      getState: mock(),
+      dispatch: jest.fn(),
+      getState: jest.fn(),
     };
-    const next = mock();
+    const next = jest.fn();
     const thunkAction: ThunkAction<UnknownAction, string, typeof extra, void> = (
       _,
       __,
