@@ -1,4 +1,4 @@
-import randomString from '.';
+import randomString from './index';
 
 describe('randomString', () => {
   let originalMathRandom: typeof Math.random;

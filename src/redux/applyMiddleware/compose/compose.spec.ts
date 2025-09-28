@@ -1,4 +1,4 @@
-import compose from '.';
+import compose from './index';
 
 const double = (x: number): number => x * 2;
 const increment = (x: number): number => x + 1;
