@@ -82,11 +82,11 @@ export function isIterable(value: unknown): value is Iterable<unknown> {
 //   return !!v && isFunction(v.take) && isFunction(v.close);
 // }
 
-// export function isStringableFunc(
-//   value: unknown,
-// ): value is ((...args: any[]) => unknown) & { toString: (...a: any[]) => string } {
-//   return isFunction(value) && Object.prototype.hasOwnProperty.call(value, 'toString');
-// }
+export function isStringableFunc(
+  value: unknown,
+): value is ((...args: any[]) => unknown) & { toString: (...a: any[]) => string } {
+  return isFunction(value) && Object.prototype.hasOwnProperty.call(value, 'toString');
+}
 
 // export function isMulticast(value: unknown): value is MulticastChannelLike {
 //   return isChannel(value) && !!(value as any)[MULTICAST];

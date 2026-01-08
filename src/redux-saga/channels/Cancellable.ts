@@ -1,3 +1,5 @@
-export interface MaybeCancellable {
-  cancel?(): void;
+export interface Cancellable {
+  cancel(): void;
 }
+
+export type MaybeCancellable = Partial<Cancellable>;

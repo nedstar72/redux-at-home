@@ -1,4 +1,4 @@
-export const CHANNEL_END = Symbol.for('saga.channelEnd');
+const CHANNEL_END = Symbol.for('@@redux-saga/$channelEnd');
 
 export type End = { type: typeof CHANNEL_END };
 

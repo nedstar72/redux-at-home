@@ -1,28 +1,22 @@
 import { once, remove } from '../utils';
-import type { MaybeCancellable } from './Cancellable';
 import { END, isEnd, type End } from './End';
-import { MATCH, wildcard, type MaybeMatcher, type Predicate } from './Matcher';
-import type { Taker } from './Taker';
+import type { Consumer } from './Consumer';
 
-export const MULTICAST = Symbol.for('saga.multicast');
+export type Predicate<T> = (value: T) => boolean;
 
-export interface MulticastChannelLike<T> {
-  take(taker: Taker<T> & MaybeMatcher<T> & MaybeCancellable, matcher?: Predicate<T>): void;
-  put(message: T | End): void;
-  close(): void;
-  [MULTICAST]: true;
-}
-
-export class MulticastChannel<T> implements MulticastChannelLike<T> {
-  [MULTICAST] = true as const;
-
+export class MulticastChannel<T> {
   #closed = false;
-  #currentTakers: Array<Taker<T> & MaybeMatcher<T> & MaybeCancellable> = [];
-  #nextTakers = this.#currentTakers;
+  #currentConsumers: Array<Consumer<T>> = [];
+  #nextConsumers = this.#currentConsumers;
+  #predicates: WeakMap<Consumer<T>, Predicate<T>> = new WeakMap();
 
-  #ensureCopyOnWrite(): void {
-    if (this.#nextTakers !== this.#currentTakers) return;
-    this.#nextTakers = this.#currentTakers.slice();
+  #ensureCanMutateNextConsumers(): void {
+    if (this.#nextConsumers !== this.#currentConsumers) return;
+    this.#nextConsumers = this.#currentConsumers.slice();
+  }
+
+  #ensureConsumersAreEqual(): void {
+    this.#currentConsumers = this.#nextConsumers;
   }
 
   put(input: T | End): void {
@@ -33,36 +27,37 @@ export class MulticastChannel<T> implements MulticastChannelLike<T> {
       return;
     }
 
-    const takersSnapshot = (this.#currentTakers = this.#nextTakers);
-    const totalTakers = takersSnapshot.length;
-
-    for (let index = 0; index < totalTakers; index++) {
-      const taker = takersSnapshot[index];
-      const matcher = taker[MATCH];
-      if (!matcher || matcher(input)) {
-        if (typeof taker.cancel === 'function') {
-          taker.cancel();
+    this.#ensureConsumersAreEqual();
+    const consumersSnapshot = this.#currentConsumers;
+    for (const consumer of consumersSnapshot) {
+      const predicate = this.#predicates.get(consumer);
+      if (!predicate || predicate(input)) {
+        if (consumer.cancel) {
+          consumer.cancel();
         }
-        taker(input);
+        consumer(input);
       }
     }
   }
 
-  take(
-    taker: Taker<T> & MaybeMatcher<T> & MaybeCancellable,
-    matcher: Predicate<T> = wildcard,
-  ): void {
+  take(consumer: Consumer<T>, predicate?: Predicate<T>): void {
     if (this.#closed) {
-      taker(END);
+      consumer(END);
       return;
     }
 
-    taker[MATCH] = matcher;
-    this.#ensureCopyOnWrite();
-    this.#nextTakers.push(taker as any);
-    taker.cancel = once(() => {
-      this.#ensureCopyOnWrite();
-      remove(this.#nextTakers, taker as any);
+    if (predicate) {
+      this.#predicates.set(consumer, predicate);
+    } else {
+      this.#predicates.delete(consumer);
+    }
+
+    this.#ensureCanMutateNextConsumers();
+    this.#nextConsumers.push(consumer);
+    consumer.cancel = once(() => {
+      this.#predicates.delete(consumer);
+      this.#ensureCanMutateNextConsumers();
+      remove(this.#nextConsumers, consumer);
     });
   }
 
@@ -70,10 +65,11 @@ export class MulticastChannel<T> implements MulticastChannelLike<T> {
     if (this.#closed) return;
     this.#closed = true;
 
-    const takersSnapshot = (this.#currentTakers = this.#nextTakers);
-    this.#nextTakers = [];
-    for (const taker of takersSnapshot) {
-      taker(END);
+    this.#ensureConsumersAreEqual();
+    const consumersSnapshot = this.#currentConsumers;
+    this.#nextConsumers = [];
+    for (const consumer of consumersSnapshot) {
+      consumer(END);
     }
   }
 }

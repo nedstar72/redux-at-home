@@ -19,3 +19,7 @@ export class BufferError extends Error {
     return new BufferError('Capacity must be >= 0', 'NEGATIVE_LIMIT');
   }
 }
+
+export function isBufferError(error: Error): error is BufferError {
+  return error instanceof BufferError;
+}

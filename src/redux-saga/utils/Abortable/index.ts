@@ -23,7 +23,9 @@ export type Abortable = {
  */
 export function isAbortable(value: unknown): value is Abortable {
   return (
-    typeof value === 'object' && value !== null && typeof (value as Abortable)[ABORT] === 'function'
+    (typeof value === 'object' || typeof value === 'function') &&
+    value !== null &&
+    typeof (value as Abortable)[ABORT] === 'function'
   );
 }
 
